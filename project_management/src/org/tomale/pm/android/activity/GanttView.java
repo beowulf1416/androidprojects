@@ -26,9 +26,6 @@ public class GanttView extends SurfaceView
 
 	Project _project;
 	
-	Calendar _start = Calendar.getInstance();
-	Calendar _end = Calendar.getInstance();
-	
 	ArrayList<Item> _items = new ArrayList<GanttView.Item>();
 	
 	DrawControllerThread _thread;
@@ -42,6 +39,8 @@ public class GanttView extends SurfaceView
 	
 	int _item_width = 100;
 	int _period_width = 100;
+	
+	int _current_period = 0;
 	
 	Paint _pTask = new Paint();
 	
@@ -66,6 +65,14 @@ public class GanttView extends SurfaceView
 			}
 			
 		}
+	}
+	
+	public int get_current_period(){
+		return _current_period;
+	}
+	
+	public void set_current_period(int value){
+		_current_period = value;
 	}
 	
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
@@ -118,49 +125,45 @@ public class GanttView extends SurfaceView
 			bCanvas.drawRect(new Rect(0, 0, width, HEADER_HEIGHT), paint);
 			
 			// draw periods
-			_end = _start;
+			int period = 0;
+			Calendar date = Calendar.getInstance();
+			date.add(Calendar.DATE, _current_period);
 			for(int i = _period_width; i < width; i += _period_width){
 				paint.setColor(Color.LTGRAY);
 				bCanvas.drawLine(i, 0, i, height, paint);
-				_end.add(Calendar.DATE, 1);
 				
 				paint.setColor(Color.WHITE);
+
+				// draw year and month only once
+				if(period == 0 || date.get(Calendar.MONTH) == Calendar.JANUARY){
+					bCanvas.drawText(String.format("%d", new Object[]{date.get(Calendar.YEAR)}), i+5, 15, paint);
+				}
+				
+				if(period == 0 || date.get(Calendar.DAY_OF_MONTH) == 1){
+					bCanvas.drawText(String.format("%d", new Object[]{date.get(Calendar.MONTH)}), i+5, 30, paint);
+				}
+				
 				bCanvas.drawText(
-						String.format("%d/%d/%d", new Object[]{_end.get(Calendar.MONTH), _end.get(Calendar.DAY_OF_MONTH), _end.get(Calendar.YEAR)}), 
-						i, 
-						40, 
+						String.format("%d", new Object[]{date.get(Calendar.DAY_OF_MONTH)}), 
+						i+5, 
+						50, 
 						paint);
+				
+				date.add(Calendar.DATE, 1);
+				period++;
 			}
-			
-//			int bar_start = _item_width;
-//			int bar_end = width;
-			
-//			long time_start = _start.getTimeInMillis()/1000;
-//			long time_end = _end.getTimeInMillis()/1000;
-			
-//			float slope = (bar_end - bar_start)/(time_end - time_start);
-//			long item_start;
-//			long item_end;
 			
 			// draw items
 			int y = HEADER_HEIGHT;
 			int y1;
 			int y2;
-//			boolean item_task = false;
 			for(Item i : _items){
-
 				y1 = y;
-				
 				i.set_y1(y1);
 				i.set_y2(i.is_expanded() ? (y += ITEM_HEIGHT_EXPANDED) : (y += ITEM_HEIGHT_NORMAL));
-	
 				y2 = y;
 				
-//				String title = "";
 				Object data = i.get_data();
-
-//				item_start = time_end;
-//				item_end = time_end;
 				
 				if(data instanceof Milestone){
 					Milestone m = (Milestone) data;
@@ -172,30 +175,6 @@ public class GanttView extends SurfaceView
 					draw_task(bCanvas, t, new Rect(0, y1, width, y2));
 				}
 				
-				
-				// draw bar
-//				paint.setColor(Color.WHITE);
-//				bCanvas.drawRoundRect(
-//					new RectF(
-//						(item_start*bar_start)/time_start, 
-//						y1+10, 
-//						(item_end*bar_start)/time_start, 
-//						y2-10), 
-//					2, 
-//					2, 
-//					paint
-//				);
-				
-//				paint.setColor(Color.WHITE);
-//				bCanvas.drawText(title, item_task ? 20 : 10, y2-10, paint);
-				
-//				bCanvas.drawText(String.format("%d %d %d %d", new Object[]{
-//						time_start, 
-//						time_end,
-//						(item_start*bar_start)/time_start,
-//						(item_end*bar_end)/time_end}),
-//					150, y2, paint);
-					
 				// draw line at bottom of item
 				paint.setColor(Color.GRAY);
 				bCanvas.drawLine(0, y2, width, y2, paint);
