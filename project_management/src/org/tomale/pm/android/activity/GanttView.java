@@ -40,6 +40,7 @@ public class GanttView extends SurfaceView
 	int _item_width = 100;
 	int _period_width = 100;
 	
+	Calendar _current_date = Calendar.getInstance();
 	int _current_period = 0;
 	
 	Paint _pTask = new Paint();
@@ -197,6 +198,13 @@ public class GanttView extends SurfaceView
 	private void draw_task(Canvas canvas, Task task, Rect rect){
 		
 		canvas.drawText(task.get_title(), rect.left+20, (rect.top+rect.bottom)/2, _pTask);
+		
+		canvas.drawRoundRect(new RectF(
+				_item_width+10, 
+				rect.top+20, 
+				rect.right-10, 
+				rect.bottom-20
+			), 3, 3, _pTask);
 		
 	}
 	
