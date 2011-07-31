@@ -27,14 +27,14 @@ public class ProjectManagementActivity extends Activity {
         
         Task t1 = new Task();
         t1.set_title("Task 1");
-        t1.set_projected_start(new Date(now.getYear(),now.getMonth(),now.getDay()+1));
-        t1.set_projected_end(new Date(now.getYear(),now.getMonth(),now.getDay()+2));
+        t1.set_projected_start(new Date(now.getYear(),now.getMonth(),now.getDate()+1));
+        t1.set_projected_end(new Date(now.getYear(),now.getMonth(),now.getDate()+2));
         m1.add_task(t1);
         
         Task t2 = new Task();
         t2.set_title("Task 2");
-        t2.set_projected_start(new Date(now.getYear(),now.getMonth(),now.getDay()+1));
-        t2.set_projected_end(new Date(now.getYear(),now.getMonth(),now.getDay()+2));
+        t2.set_projected_start(new Date(now.getYear(),now.getMonth(),now.getDate()+2));
+        t2.set_projected_end(new Date(now.getYear(),now.getMonth(),now.getDate()+3));
         
         m1.add_task(t2);
         
@@ -43,14 +43,20 @@ public class ProjectManagementActivity extends Activity {
         
         Task t3 = new Task();
         t3.set_title("task 3");
+        t3.set_projected_start(new Date(now.getYear(),now.getMonth(),now.getDate()+2));
+        t3.set_projected_end(new Date(now.getYear(),now.getMonth(),now.getDate()+4));
         m2.add_task(t3);
         
         Task t4 = new Task();
         t4.set_title("task 4");
+        t4.set_projected_start(new Date(now.getYear(),now.getMonth(),now.getDate()+2));
+        t4.set_projected_end(new Date(now.getYear(),now.getMonth(),now.getDate()+4));
         m2.add_task(t4);
         
         Task t5 = new Task();
         t5.set_title("task 5");
+        t5.set_projected_start(new Date(now.getYear(),now.getMonth(),now.getDate()+1));
+        t5.set_projected_end(new Date(now.getYear(),now.getMonth(),now.getDate()+3));
         m2.add_task(t5);
         
         Project p = new Project();

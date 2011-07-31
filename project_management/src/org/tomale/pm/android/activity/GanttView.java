@@ -37,8 +37,9 @@ public class GanttView extends SurfaceView
 	final int ITEM_HEIGHT_NORMAL = 50;
 	final int ITEM_HEIGHT_EXPANDED = 100;
 	
-	int _item_width = 100;
+	int _item_width = 120;
 	int _period_width = 100;
+	float _slope;
 	
 	Calendar _current_date = Calendar.getInstance();
 	int _current_period = 0;
@@ -120,6 +121,8 @@ public class GanttView extends SurfaceView
 			// draw items column
 			paint.setColor(Color.DKGRAY);
 			bCanvas.drawRect(new Rect(0, 0, _item_width, height), paint);
+			paint.setColor(Color.RED);
+			bCanvas.drawLine(_item_width, 0, _item_width, height, paint);
 			
 			// draw header
 			paint.setColor(Color.BLUE);
@@ -131,22 +134,22 @@ public class GanttView extends SurfaceView
 			date.add(Calendar.DATE, _current_period);
 			for(int i = _period_width; i < width; i += _period_width){
 				paint.setColor(Color.LTGRAY);
-				bCanvas.drawLine(i, 0, i, height, paint);
+				bCanvas.drawLine(i+_item_width, 0, i+_item_width, height, paint);
 				
 				paint.setColor(Color.WHITE);
 
 				// draw year and month only once
 				if(period == 0 || date.get(Calendar.MONTH) == Calendar.JANUARY){
-					bCanvas.drawText(String.format("%d", new Object[]{date.get(Calendar.YEAR)}), i+5, 15, paint);
+					bCanvas.drawText(String.format("%d", new Object[]{date.get(Calendar.YEAR)}), i+_item_width+5, 15, paint);
 				}
 				
 				if(period == 0 || date.get(Calendar.DAY_OF_MONTH) == 1){
-					bCanvas.drawText(String.format("%d", new Object[]{date.get(Calendar.MONTH)}), i+5, 30, paint);
+					bCanvas.drawText(String.format("%d", new Object[]{date.get(Calendar.MONTH)}), i+_item_width+5, 30, paint);
 				}
 				
 				bCanvas.drawText(
 						String.format("%d", new Object[]{date.get(Calendar.DAY_OF_MONTH)}), 
-						i+5, 
+						i+_item_width+5, 
 						50, 
 						paint);
 				
@@ -198,19 +201,38 @@ public class GanttView extends SurfaceView
 	private void draw_task(Canvas canvas, Task task, Rect rect){
 		
 		canvas.drawText(task.get_title(), rect.left+20, (rect.top+rect.bottom)/2, _pTask);
+
+		int start = (int) (task.get_start_date().getTime() - _current_date.getTimeInMillis())/86400000;
+		int end = (int) (task.get_end_date().getTime() - _current_date.getTimeInMillis())/86400000;
 		
-		canvas.drawRoundRect(new RectF(
-				_item_width+10, 
-				rect.top+20, 
-				rect.right-10, 
-				rect.bottom-20
-			), 3, 3, _pTask);
+		canvas.drawText(String.format("%d", new Object[]{start}), 100, rect.bottom, _pTask);
+		
+		if(start > 0 && end > 0){
+			canvas.drawRoundRect(new RectF(
+					(start*_period_width)+_item_width, 
+					rect.top+20, 
+					(end*_period_width)+_item_width, 
+					rect.bottom-20
+				), 3, 3, _pTask);
+		}
 		
 	}
 	
 	private void draw_milestone(Canvas canvas, Milestone milestone, Rect rect){
 		
 		canvas.drawText(milestone.get_title(), rect.left+10, (rect.top+rect.bottom)/2, _pTask);
+	
+		int start = (int) (milestone.get_start_date().getTime() - _current_date.getTimeInMillis())/86400000;
+		int end = (int) (milestone.get_end_date().getTime() - _current_date.getTimeInMillis())/86400000;
+
+		if(start > 0 && end > 0){
+			canvas.drawRoundRect(new RectF(
+					(start*_period_width)+_item_width, 
+					rect.top+20, 
+					(end*_period_width)+_item_width, 
+					rect.bottom-20
+				), 3, 3, _pTask);
+		}
 		
 	}
 	
