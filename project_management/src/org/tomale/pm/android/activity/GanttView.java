@@ -18,8 +18,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.RemoteViews.ActionException;
 
 public class GanttView extends SurfaceView
 	implements SurfaceHolder.Callback {
@@ -45,13 +47,46 @@ public class GanttView extends SurfaceView
 	int _current_period = 0;
 	
 	Paint _pTask = new Paint();
+
+	boolean _scroll = false;
+	
+	float _action_down_pt_x;
+	float _action_down_pt_y;
+	
+	float _action_up_pt_x;
+	float _action_up_pt_y;
 	
 	public GanttView(Context context) {
 		super(context);
 		getHolder().addCallback(this);
 		_thread = new DrawControllerThread(getHolder(), this);
+		
+		// attach event handlers
+		
 	}
 	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		
+		switch(event.getAction()){
+			case MotionEvent.ACTION_DOWN:{
+				_action_up_pt_x = event.getX();
+				_action_up_pt_y = event.getY();
+				break;
+			}
+			case MotionEvent.ACTION_MOVE:{
+				break;
+			}
+			case MotionEvent.ACTION_UP:{
+				_action_down_pt_x = event.getX();
+				_action_down_pt_y = event.getY();
+				break;
+			}
+		}
+		
+		return true;
+	}
+
 	public Project get_project(){
 		return _project;
 	}
