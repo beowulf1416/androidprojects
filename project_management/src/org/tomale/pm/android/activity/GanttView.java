@@ -50,6 +50,8 @@ public class GanttView extends SurfaceView
 
 	boolean _scroll = false;
 	
+	float _offset_x = 0;
+	
 	float _action_down_pt_x;
 	float _action_down_pt_y;
 	
@@ -75,11 +77,22 @@ public class GanttView extends SurfaceView
 				break;
 			}
 			case MotionEvent.ACTION_MOVE:{
+				
+				float x = event.getX();
+				float y = event.getY();
+				
+				int d = (int) (x - _action_down_pt_x)/_period_width;
+				_current_date.add(Calendar.DAY_OF_MONTH, d);
+				
 				break;
 			}
 			case MotionEvent.ACTION_UP:{
 				_action_down_pt_x = event.getX();
 				_action_down_pt_y = event.getY();
+				
+				int d = (int) (_action_down_pt_x - _action_down_pt_x)/_period_width;
+				_current_date.add(Calendar.DAY_OF_MONTH, d);
+				
 				break;
 			}
 		}
@@ -165,9 +178,9 @@ public class GanttView extends SurfaceView
 			
 			// draw periods
 			int period = 0;
-			Calendar date = Calendar.getInstance();
+			Calendar date = (Calendar) _current_date.clone();
 			date.add(Calendar.DATE, _current_period);
-			for(int i = _period_width; i < width; i += _period_width){
+			for(int i = 0; i < width; i += _period_width){
 				paint.setColor(Color.LTGRAY);
 				bCanvas.drawLine(i+_item_width, 0, i+_item_width, height, paint);
 				
@@ -235,7 +248,7 @@ public class GanttView extends SurfaceView
 	
 	private void draw_task(Canvas canvas, Task task, Rect rect){
 		
-		canvas.drawText(task.get_title(), rect.left+20, (rect.top+rect.bottom)/2, _pTask);
+		canvas.drawText(task.get_title(), rect.left+_offset_x+20, (rect.top+rect.bottom)/2, _pTask);
 
 		int start = (int) (task.get_start_date().getTime() - _current_date.getTimeInMillis())/86400000;
 		int end = (int) (task.get_end_date().getTime() - _current_date.getTimeInMillis())/86400000;
@@ -244,7 +257,7 @@ public class GanttView extends SurfaceView
 		
 		if(start > 0 && end > 0){
 			canvas.drawRoundRect(new RectF(
-					(start*_period_width)+_item_width, 
+					(start*_period_width)+_item_width+_offset_x, 
 					rect.top+20, 
 					(end*_period_width)+_item_width, 
 					rect.bottom-20
@@ -255,14 +268,14 @@ public class GanttView extends SurfaceView
 	
 	private void draw_milestone(Canvas canvas, Milestone milestone, Rect rect){
 		
-		canvas.drawText(milestone.get_title(), rect.left+10, (rect.top+rect.bottom)/2, _pTask);
+		canvas.drawText(milestone.get_title(), rect.left+_offset_x+10, (rect.top+rect.bottom)/2, _pTask);
 	
 		int start = (int) (milestone.get_start_date().getTime() - _current_date.getTimeInMillis())/86400000;
 		int end = (int) (milestone.get_end_date().getTime() - _current_date.getTimeInMillis())/86400000;
 
 		if(start > 0 && end > 0){
 			canvas.drawRoundRect(new RectF(
-					(start*_period_width)+_item_width, 
+					(start*_period_width)+_item_width+_offset_x, 
 					rect.top+20, 
 					(end*_period_width)+_item_width, 
 					rect.bottom-20
